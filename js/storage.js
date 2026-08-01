@@ -1,41 +1,46 @@
-// ===============================
-// STORAGE.JS
-// Работа с сохранениями игры
-// ===============================
+// =====================================
+// storage.js
+// =====================================
 
 const STORAGE_KEY = "mexicoRouteProgress";
 
 const Storage = {
 
-    getProgress() {
-        const value = parseInt(localStorage.getItem(STORAGE_KEY));
-
-        if (isNaN(value))
-            return 1;
-
-        return value;
+    getCurrentStep() {
+        const value = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+        return isNaN(value) ? 1 : value;
     },
 
-    saveProgress(step) {
+    saveCurrentStep(step) {
         localStorage.setItem(STORAGE_KEY, step);
     },
 
-    completeCurrentStep() {
-
-        if (currentStep >= 24)
-            return;
+    completeStep() {
+        if (currentStep >= 24) return;
 
         currentStep++;
 
-        this.saveProgress(currentStep);
+        this.saveCurrentStep(currentStep);
 
         updateProgressUI();
         updateMapDisplay();
         selectLocation(currentStep);
     },
 
-    resetGame() {
+    unlockStep(step) {
+        if (step !== currentStep) return;
 
+        if (currentStep < 24) {
+            currentStep++;
+            this.saveCurrentStep(currentStep);
+        }
+
+        updateProgressUI();
+        updateMapDisplay();
+        selectLocation(currentStep);
+    },
+
+    reset() {
         localStorage.removeItem(STORAGE_KEY);
 
         currentStep = 1;
